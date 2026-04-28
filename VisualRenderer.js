@@ -24,6 +24,7 @@ export class VisualRenderer {
     // 隐私模式
     this.videoElement = null;
     this.privacyMode = false;
+    this.isMirrored = true;
 
     // 调整画布尺寸
     this.resize();
@@ -39,6 +40,10 @@ export class VisualRenderer {
     if (this.videoElement) {
       this.videoElement.style.opacity = enabled ? '0' : '1';
     }
+  }
+
+  setMirrored(mirrored) {
+    this.isMirrored = mirrored;
   }
 
   setMode(mode) {
@@ -132,6 +137,10 @@ export class VisualRenderer {
       try {
         this.ctx.save();
         this.ctx.filter = 'blur(20px) brightness(0.3)';
+        if (this.isMirrored) {
+          this.ctx.translate(w, 0);
+          this.ctx.scale(-1, 1);
+        }
         this.ctx.drawImage(this.videoElement, 0, 0, w, h);
         this.ctx.restore();
       } catch (e) {

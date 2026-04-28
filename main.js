@@ -385,6 +385,7 @@ class HandMusicApp {
     if (this.videoElement) {
       this.videoElement.style.transform = this.isMirrored ? 'scaleX(-1)' : 'scaleX(1)';
     }
+    this.visualRenderer.setMirrored(this.isMirrored);
   }
 
   /**
