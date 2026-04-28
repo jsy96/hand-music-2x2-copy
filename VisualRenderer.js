@@ -21,11 +21,26 @@ export class VisualRenderer {
     this.sequenceTime = 0;
     this.lastTriggeredStep = -1;
     
+    // 隐私模式
+    this.videoElement = null;
+    this.privacyMode = false;
+
     // 调整画布尺寸
     this.resize();
     window.addEventListener('resize', () => this.resize());
   }
-  
+
+  setVideoElement(videoElement) {
+    this.videoElement = videoElement;
+  }
+
+  setPrivacyMode(enabled) {
+    this.privacyMode = enabled;
+    if (this.videoElement) {
+      this.videoElement.style.opacity = enabled ? '0' : '1';
+    }
+  }
+
   setMode(mode) {
     this.mode = mode === 'rings' ? 'rings' : 'grid';
   }
@@ -111,10 +126,23 @@ export class VisualRenderer {
     const w = this.canvas.width / dpr;
     const h = this.canvas.height / dpr;
     
-    // 清空画布（保留半透明背景以显示底层视频）
-    // 注意：透明度由 CSS opacity 控制，这里只设置轻微的背景色
-    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-    this.ctx.fillRect(0, 0, w, h);
+    // 清空画布
+    if (this.privacyMode && this.videoElement && this.videoElement.readyState >= 2) {
+      // 隐私模式：将视频帧绘制到 Canvas 并模糊化
+      try {
+        this.ctx.save();
+        this.ctx.filter = 'blur(20px) brightness(0.3)';
+        this.ctx.drawImage(this.videoElement, 0, 0, w, h);
+        this.ctx.restore();
+      } catch (e) {
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        this.ctx.fillRect(0, 0, w, h);
+      }
+    } else {
+      // 正常模式：半透明背景，让底层视频透过 CSS 显示
+      this.ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      this.ctx.fillRect(0, 0, w, h);
+    }
     
     if (this.mode === 'rings') {
       this.renderRings(harmonyPattern, rhythmPattern, tempoBPM, w, h);
