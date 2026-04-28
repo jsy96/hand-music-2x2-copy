@@ -49,6 +49,10 @@ class HandMusicApp {
     this.visualRenderer = new VisualRenderer(this.canvasElement, 8);
     this.i18n = new I18nManager();
 
+    // 隐私模式：隐藏视频元素，Canvas 自行绘制模糊背景
+    this.visualRenderer.setVideoElement(this.videoElement);
+    this.visualRenderer.setPrivacyMode(true);
+
     // 语言切换按钮和折叠按钮
     this.languageToggle = document.getElementById('languageToggle');
     this.collapseBtn = document.getElementById('collapseBtn');
